@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="music/static/css/style.css">
+    <script src="music/static/js/jquery.min.js"></script>
+</head>
+<body>
+ <div class="dl_Banner_container">
+            <button class="play_" href="javascript:void(0);" onclick="PlayButton_clicked()">Play</button>
+
+            <div class="barbg">
+                <div class="currtime">CurrentTime</div>
+                <div class="TotalTime">TotalTime</div>
+                <div class="player-music-title">是你</div>
+                <img class="player-music-img"></img>
+                <div class="rdy">
+                    <div class="cur">
+                        <div class="btn_">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <audio id="audioPlayer" ontimeupdate="updata()" src="https://music.163.com/song/media/outer/url?id=1966162185.mp3">
+        <source src="">
+        </source>
+    </audio>
+</body>
+<script>
+        function musicPlay(name, src, pic_src) {
+        $('#audioPlayer').attr("src", src)
+        $('#audioPlayer')[0].play()
+        $('.player-music-title').text(name)
+        $('.player-music-img').attr("src", pic_src)
+        $('.play_').text("Pause")
+        console.log(pic_src)
+    }
+    var vid = document.getElementById("audioPlayer");
+    vid.onerror = function () {
+        alert("Playback failed")
+    };
+    function updata() {
+        var audio = $('#audioPlayer')[0];
+        // console.log(audio.currentTime,"进度",(audio.currentTime/audio.duration)*100);//控制台显示
+        $('.cur').css("width", 450 * (audio.currentTime / audio.duration))
+        $('.currtime').text("CurrentTime:" + parseInt(audio.currentTime) + "s")
+        $('.TotalTime').text("TotalTime:" + parseInt(audio.duration) + "s")
+        if (audio.duration > 0 && !audio.paused) {
+            $('.player-music-img').css("animation", "rotate 6s linear infinite")
+        } else {
+            $('.player-music-img').css("animation", "")
+        }
+    }
+     function PlayButton_clicked() {
+        var audio = $('#audioPlayer')[0];
+        if (audio.duration > 0 && !audio.paused) {
+            audio.pause()
+            $('.play_').text("Play")
+        } else {
+            audio.play()
+            $('.play_').text("Pause")
+        }
+    }
+</script>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>音乐推荐系统</title>
+    <link rel="icon" href="favicons/1.png">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.0.3/css/font-awesome.css">
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/DIYgod/APlayer@1.10.1/dist/APlayer.min.css">
+    <link rel="stylesheet" href="static/css/reset.css">
+    <link rel="stylesheet" href="static/css/index.css">
+    <link rel="stylesheet" type="text/css" href="static/css/style.css">
+    <script src="static/js/jquery.min1.js"></script>
+
+    <style>
+        /* 系统标题样式 */
+        #system-title {
+            font-size: 24px;
+            color: #ffffff;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin: 0 40px 0 20px;
+            transition: all 0.3s ease;
+            letter-spacing: 1.5px;
+        }
+
+        /* 头部样式 */
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 100;
+            height: 210px;
+        }
+
+        .header-top {
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 导航菜单样式 */
+        .header-nav ul {
+            display: flex;
+            gap: 30px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header-nav a {
+            color: #fff;
+            font-size: 16px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-nav a:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 二级导航 */
+        .header-subNav {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 12px 30px;
+            margin-top: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .header-subNav li {
+            margin: 0 15px;
+            position: relative;
+        }
+
+        .header-subNav a {
+            color: #ecf0f1;
+            font-size: 14px;
+            padding: 8px 15px;
+            transition: color 0.3s ease;
+        }
+
+        .header-subNav a:hover {
+            color: #3498db;
+        }
+
+        /* 播放器容器 */
+        .app-wrapper {
+            background: #2c3e50 !important;
+            height: 100px !important;
+            border-radius: 15px 15px 0 0 !important;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 页脚样式 */
+        .footer {
+            background: #34495e;
+            color: #bdc3c7;
+            padding: 30px 0;
+            margin-top: 50px;
+            position: relative;
+        }
+
+        .footer-copyright p {
+            text-align: center;
+            margin: 5px 0;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .footer a {
+            color: #ecf0f1;
+            margin: 0 8px;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #3498db;
+            text-decoration: underline;
+        }
+
+        body {
+            margin-bottom: 100px; /* 为播放器预留空间 */
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* 修改后的播放器容器 */
+        .app-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: rgba(44, 62, 80, 0.95) !important;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .right-area {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        #aplayer {
+            flex-grow: 1;
+            margin-right: 20px;
+        }
+
+        #clear-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            color: #fff;
+            cursor: button;
+            transition: all 0.3s ease;
+        }
+
+        #clear-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* 调整页脚 */
+        .footer {
+            margin-top: auto; /* 确保页脚在内容之后 */
+            padding-bottom: 30px; /* 增加底部间距 */
+        }
+    </style>
+</head>
+<body>
+<!-- 头部区域 -->
+<header class="header">
+    <div class="header-container">
+        <div class="header-top">
+            <h1 id="system-title">🎵 音乐推荐系统</h1>
+            <nav class="header-nav">
+                <ul>
+                    <li><a href="/index" class="header-nav__cur">🎻 音乐馆</a></li>
+                    <li><a href="/search">🔍 搜索音乐</a></li>
+                </ul>
+            </nav>
+            <div class="header-login">
+                <a href="/logout" class="open-green">🚪 退出</a>
+                {% if session.username != '' %}
+                    <a href="/changgeinfo" class="open-green">🚪 个人信息管理</a>
+                {% endif %}
+            </div>
+        </div>
+        <ul class="header-subNav">
+            <li><a href="/index" class="subNav-cur">🏠 首页</a></li>
+            <li><a href="/songer_list">🔥 歌曲排行</a></li>
+            <li><a href="/playlist">📜 歌单排行</a></li>
+            <li><a href="/ksh">📊 可视化</a></li>
+            <li><a href="/collect_list">❤️ 收藏列表</a></li>
+            <li><a href="/category_music">🎵️ 歌曲分类</a></li>
+        </ul>
+    </div>
+</header>
+
+<!-- 内容区块 -->
+{% block content %}
+{% endblock %}
+
+<!-- 播放器 -->
+<div class="app-wrapper">
+    <div class="right-area">
+        <div id="aplayer"></div>
+        <button id="clear-btn"><i class="fa fa-trash-o"></i> 清空列表</button>
+    </div>
+</div>
+
+<!-- 页脚 -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-copyright">
+            <p>
+                <a href="#">关于我们</a><span>|</span>
+                <a href="#">服务条款</a><span>|</span>
+                <a href="#">隐私政策</a><span>|</span>
+                <a href="#">联系我们</a>
+            </p>
+            <p>Copyright © 2025 - 2026 MusicRec. All Rights Reserved.</p>
+            <p>音乐推荐系统 版权所有 备12345678号</p>
+        </div>
+    </div>
+</footer>
+<script src="https://fastly.jsdelivr.net/gh/DIYgod/aplayer@1.10.1/dist/APlayer.min.js"></script>
+<script>
+    function musicPlay(name, src, pic_src) {
+        $('#audioPlayer').attr("src", src)
+        $('#audioPlayer')[0].play()
+        $('.player-music-title').text(name)
+        $('.player-music-img').attr("src", pic_src)
+        $('.play_').text("Pause")
+        console.log(src)
+    }
+
+    var vid = document.getElementById("audioPlayer");
+    vid.onerror = function () {
+        alert("Playback failed")
+    };
+
+    function updata() {
+        var audio = $('#audioPlayer')[0];
+        // console.log(audio.currentTime,"进度",(audio.currentTime/audio.duration)*100);//控制台显示
+        $('.cur').css("width", 450 * (audio.currentTime / audio.duration))
+        $('.currtime').text("CurrentTime:" + parseInt(audio.currentTime) + "s")
+        $('.TotalTime').text("TotalTime:" + parseInt(audio.duration) + "s")
+        if (audio.duration > 0 && !audio.paused) {
+            $('.player-music-img').css("animation", "rotate 6s linear infinite")
+        } else {
+            $('.player-music-img').css("animation", "")
+        }
+    }
+
+    function PlayButton_clicked() {
+        var audio = $('#audioPlayer')[0];
+        if (audio.duration > 0 && !audio.paused) {
+            audio.pause()
+            $('.play_').text("Play")
+        } else {
+            audio.play()
+            $('.play_').text("Pause")
+        }
+    }
+</script>
+
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/script.js"></script>
+<script src="{{ url_for('static', filename='js/play.js') }}"></script>
+<script>
+    window.addEventListener('unload', function () {
+        localStorage.setItem('aplayer', JSON.stringify(window.ap.list.audios));
+        localStorage.setItem('aplayerIndex', JSON.stringify(window.ap.list.index))
+    });
+    $(document).ready(function () {
+        try {
+            var avatar = $("#avatar")
+            avatar.click(function () {
+                $("#fileInput").click();
+            });
+            $("#fileInput").change(function () {
+                var fileInput = document.getElementById("fileInput");
+                var file = fileInput.files[0];
+                var formData = new FormData();
+                formData.append("file", file);
+                $.ajax({
+                    url: "/upload",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.file) {
+                            $("#avatar").attr("src", response.file);
+                        }
+                        $('#modalBody').html(response.message);
+                        $('#messageModal').modal('show');
+                    },
+                    error: function (error) {
+                        console.log(error);
+                        $('#modalBody').html(error);
+                        $('#messageModal').modal('show');
+                    }
+                });
+            });
+        } catch (e) {
+        }
+        var audioList = localStorage.getItem('aplayer');
+        var audioIndex = localStorage.getItem('aplayerIndex');
+        if (audioList) {
+            audioList = JSON.parse(audioList);
+        } else {
+            audioList = [];
+        }
+        window.ap = new APlayer({
+            container: document.getElementById('aplayer'),
+            theme: '#bb1919',
+            loop: 'all',
+            order: 'list',
+            preload: 'none',
+            mutex: true,
+            listFolded: true,
+            listMaxHeight: 50,
+            lrcType: 1,
+            audio: audioList,
+            autoplay: false
+        });
+        if (audioIndex) {
+            window.ap.list.switch(parseInt(audioIndex))
+        }
+        window.ap.on('error', function () {
+            var index = window.ap.list.index
+            var song = window.ap.list.audios[index]
+            if (song.id !== undefined) {
+                console.log(song.id)
+                $.ajax({
+                    type: 'POST',
+                    url: '/retry',
+                    data: JSON.stringify({
+                        'id': song.id,
+                    }),
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function (response) {
+                        window.ap.lrcType = 1;
+                        song['url'] = response.url;
+                        song['lrc'] = response.lyrics;
+                        song['tlyrics'] = response.tlyrics;
+                        window.ap.list.audios.splice(index, 1, song);
+                        _songs = window.ap.list.audios;
+                        window.ap.list.clear();
+                        window.ap.list.add(_songs)
+                        window.ap.list.switch(index);
+                        window.ap.list.index = index;
+                        upgrade_player();
+                        if (!window.ap.parse) {
+                            window.ap.play();
+                        }
+                        add_playing();
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            }
+        });
+        window.ap.on('listswitch', add_playing)
+
+        const navbar = document.getElementById("navbar");
+        const navItems = navbar.getElementsByClassName("item-link");
+        for (let i = 0; i < navItems.length; i++) {
+            const link = navItems[i];
+            if (window.location.href === link.href) {
+                link.classList.add("active");
+                break
+            }
+        }
+        $('a').on('click', function (event) {
+            event.preventDefault(); // 阻止默认的链接跳转行为
+            var url = $(this).attr('href'); // 获取链接的地址
+            var title = $(this).text(); // 获取链接的文本
+            history.pushState({url: url, title: title}, title, url); // 修改路由，不刷新页面
+            loadPage(url); // 加载新页面内容
+        });
+    });
+
+    function add_playing() {
+        try {
+            $('.files-table-row').each(function (index, row) {
+                if (window.ap.list.audios.length > 0 && window.ap.list.audios[window.ap.list.index].id === parseInt($(this).children('.name-cell').text())) {
+                    row.classList.add('is-playing');
+                } else {
+                    try {
+                        row.classList.remove('is-playing');
+                    } catch (e) {
+
+                    }
+                }
+            })
+            var targetElement = document.querySelector('.is-playing');
+            targetElement.scrollIntoView({behavior: 'smooth'});
+        } catch (e) {
+        }
+    }
+
+    function loadPage(url) {
+        var content = $('#content');
+        content.html('<section><span class="loader"> </span></section>'); // 显示加载动画
+        $.ajax({
+            url: url,
+            method: 'GET',
+            dataType: 'html',
+            success: function (response) {
+                content.html($(response).find('#content').html()); // 更新页面内容
+                var tempDiv = document.createElement('div');
+                tempDiv.innerHTML = response;
+                loadScripts(tempDiv.querySelectorAll('script')); // 加载新页面的脚本
+                if (url === '/user/logout') {
+                    window.location.reload();
+                }
+            },
+            error: function (xhr, status, error) {
+                content.html('<h1>Error</h1><p>' + error + '</p>');
+            }
+        });
+    }
+
+    function loadScripts(scripts) {
+        // 移除之前加载的脚本
+        $('script[src]:not([src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"], [src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"])').remove();
+        var script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js';
+        document.head.appendChild(script);
+        scripts.forEach(function (as) {
+            var src = as.src;
+            if (src !== 'https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js' && src !== 'https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js' && src !== 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js') {
+                var script = document.createElement('script');
+                script.src = src;
+                document.head.appendChild(script);
+            }
+        });
+    }
+
+
+</script>

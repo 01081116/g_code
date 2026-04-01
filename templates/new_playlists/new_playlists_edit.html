@@ -1,0 +1,195 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+    <style>
+        .submit-btn-container {
+            text-align: center; /* 按钮居中 */
+            margin-top: 20px; /* 顶部间距 */
+        }
+
+        /* 为整个表单添加一个外部容器，并设置其左右边距 */
+        #data-form {
+            margin-left: 50px; /* 调整这里的值以改变表单距离左侧的距离 */
+            margin-right: 50px; /* 如果需要，也可以设置右边距 */
+            /* 可以添加更多样式来美化表单，例如背景色、边框等 */
+            background-color: #ffffff; /* 示例背景色 */
+            padding: 20px; /* 内边距，使表单元素与边框有一定距离 */
+            border: 1px solid #ffffff; /* 边框样式 */
+        }
+
+        /* 为表单组添加样式，例如间距 */
+        .form-group {
+            margin-bottom: 15px; /* 每个表单组之间的间距 */
+        }
+
+        /* 为提交按钮添加样式 */
+        #submit-btn {
+            background-color: #007bff !important;
+            border-color: #007bff !important;
+            margin-top: 10px; /* 提交按钮与其他表单元素之间的间距 */
+        }
+    </style>
+    <main class="main-content">
+        <div class="container-fluid">
+            <!-- begin::page header -->
+            <div class="page-header d-md-flex justify-content-between align-items-center">
+                <div>
+                    <h4>歌单数据编辑</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#">歌单数据管理</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">编辑歌单数据</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <div class="page-header d-md-flex justify-content-between align-items-center">
+                <div>
+                    <h5><a href="javascript:history.back()">← 返回</a></h5>
+                </div>
+                <h4>编辑歌单数据</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <form id="data-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="author">作者：</label>
+                    <input type="text" id="author" name="author" class="form-control"
+                           placeholder="请输入作者" value="{{ results.author }}" >
+
+            </div>
+            <div class="form-group">
+                <label for="gdid">歌单id：</label>
+                    <input type="text" id="gdid" name="gdid" class="form-control"
+                           placeholder="请输入歌单id" value="{{ results.gdid }}"  required >
+
+            </div>
+        <div class="form-group" style="display: none;">
+            <label for="id">ID：</label>
+            <input type="text" id="id" name="id" class="form-control"
+                   placeholder="后台自动生成" value="{{ results.id }}" readonly>
+        </div>
+            <div class="form-group">
+                <label for="page">页面编号：</label>
+                    <input type="text" id="page" name="page" class="form-control"
+                           placeholder="请输入页面编号" value="{{ results.page }}"  required >
+
+            </div>
+            <div class="form-group">
+                <label for="play_count">播放次数：</label>
+                    <input type="text" id="play_count" name="play_count" class="form-control"
+                           placeholder="请输入播放次数" value="{{ results.play_count }}"  required >
+
+            </div>
+            <div class="form-group">
+                <label for="playlist_cover">歌单封面：</label>
+                    <input type="text" id="playlist_cover" name="playlist_cover" class="form-control"
+                           placeholder="请输入歌单封面" value="{{ results.playlist_cover }}" >
+
+            </div>
+            <div class="form-group">
+                <label for="playlist_link">歌单链接：</label>
+                    <input type="text" id="playlist_link" name="playlist_link" class="form-control"
+                           placeholder="请输入歌单链接" value="{{ results.playlist_link }}" >
+
+            </div>
+            <div class="form-group">
+                <label for="playlist_title">歌单标题：</label>
+                    <input type="text" id="playlist_title" name="playlist_title" class="form-control"
+                           placeholder="请输入歌单标题" value="{{ results.playlist_title }}" >
+
+            </div>
+            <div class="form-group">
+                <label for="type">歌单类型：</label>
+                    <input type="text" id="type" name="type" class="form-control"
+                           placeholder="请输入歌单类型" value="{{ results.type }}" >
+
+            </div>
+                        <div class="submit-btn-container">
+                            <button type="button" class="btn btn-primary" id="submit-btn">保存</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+         $(document).ready(function () {
+            $('#submit-btn').click(function () {
+                // 获取表单数据
+                var form = $('#data-form')[0];
+                var formData = new FormData(form);
+
+                // 查找所有 required 的输入框
+                var requiredInputs = $(form).find('input[required]');
+                // 验证所有字段是否为空
+                var isEmptyField = false;
+                requiredInputs.each(function () {
+                    var input = $(this);
+                    if (!input.val()) {
+                        Swal.fire({
+                            text: '请填写所有必填项',
+                            icon: 'warning',
+                            timer: 2000, // 提示框显示2000毫秒
+                            timerProgressBar: true,
+                        });
+                        isEmptyField = true;
+                        return false; // 终止循环
+                    }
+                });
+                if (isEmptyField) {
+                    return; // 如果有空字段，停止继续执行
+                }
+                // 发送 AJAX 请求
+                $.ajax({
+                    url: '/new_playlists/edit', // 替换为后台处理 URL
+                    type: 'POST',
+                    processData: false, // 告诉 jQuery 不要处理发送的数据
+                    contentType: false, // 告诉 jQuery 不要设置内容类型
+                    data: formData,
+                    success: function (response) {
+                        if (response.status === 200) {
+                            // 处理成功响应
+                            Swal.fire({
+                                text: response.message,
+                                icon: 'success',
+                                timer: 2000, // 提示框显示2000毫秒
+                                timerProgressBar: true,
+                                willClose: () => {
+                                    // 修改 URL 以触发导航
+                                    window.location.href = document.referrer;
+                                    // 延迟刷新页面
+                                    setTimeout(() => {
+                                        location.reload();
+                                    }, 1000); // 1秒后刷新页面
+                                },
+                            });
+
+                        } else if (response.status === 500) {
+                            // 处理成功响应
+                            Swal.fire({
+                                text: response.message,
+                                icon: 'error',
+                                timer: 2000, // 提示框显示2000毫秒
+                                timerProgressBar: true,
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // 处理错误响应
+                        Swal.fire({
+                            text: '保存失败: ' + error,
+                            icon: 'error',
+                            timer: 2000, // 提示框显示2000毫秒
+                            timerProgressBar: true,
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+{% endblock %}

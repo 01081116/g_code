@@ -1,0 +1,5 @@
+pyexecjs2
+crypto-js
+flask
+pymysql
+werkzeug

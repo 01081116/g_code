@@ -1,0 +1,499 @@
+{% extends 'base.html' %}
+{% block content %}
+    <script src="static/assets/js/echarts.min.js"></script>
+    <script src="static/assets/js/echarts-wordcloud.min.js"></script>
+    <style>
+        .echarts-container {
+            transition: transform 0.3s;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .echarts-container:hover {
+            transform: translateY(-5px);
+        }
+
+    </style>
+    <div style="display: flex;flex-wrap: wrap;justify-content: center;background: #f5f7fa;padding: 20px">
+
+        <!-- 玫瑰图 -->
+        <div id="roseChart"
+             style="width: 45%;height:500px;margin:10px;background:#fff;border-radius: 12px;padding:15px"></div>
+
+        <!-- 堆叠柱状图 -->
+        <div id="stackBar"
+             style="width: 45%;height:500px;margin:10px;background:#fff;border-radius: 12px;padding:15px"></div>
+
+        <!-- 散点图 -->
+        <div id="bubbleChart"
+             style="width: 90%;height:600px;margin:10px;background:#fff;border-radius: 12px;padding:15px"></div>
+
+        <!-- 环形图 -->
+        <div id="ringChart"
+             style="width: 30%;height:500px;margin:10px;background:#fff;border-radius: 12px;padding:15px"></div>
+
+        <!-- 横向柱状图 -->
+        <div id="barChart"
+             style="width: 55%;height:500px;margin:10px;background:#fff;border-radius: 12px;padding:15px"></div>
+
+        <!-- 折线图 -->
+        <div id="lineChart"
+             style="width: 90%;height:500px;margin:10px;background:#fff;border-radius: 12px;padding:15px">
+
+        </div>
+
+        <!-- 环形图 -->
+        <div id="playchart"
+             style="width: 30%;height:500px;margin:10px;background:#fff;border-radius: 12px;padding:15px"></div>
+        <div id="titleword"
+             style="width: 50%;height:500px;margin:10px;background:#fff;border-radius: 12px;padding:15px"></div>
+
+    </div>
+
+    <script>
+        const baseOption = {
+            textStyle: {
+                fontFamily: 'Microsoft YaHei',
+                color: '#606266'
+            },
+            animationDuration: 1500,
+            grid: {containLabel: true}
+        };
+
+        // 初始化所有图表
+        function initCharts() {
+            initPie();
+            initStackBar();
+            initBubble();
+            initRing();
+            initBar();
+            initLine();
+        }
+
+
+        // 柔和主题色
+        const colors = ['#7EB8DA', '#96C7A2', '#E6B3B3', '#D4A5E6', '#FFD700', '#87CECB'];
+        const bgColor = '#f5f7fa';
+
+    function initPie() {
+    // 自定义颜色数组
+    const colors = ['#FF6F61', '#6F5B7F', '#88B04B', '#F7CAC9', '#92A8D1', '#955251', '#B5B22E'];
+
+    const option = {
+        title: {
+            text: '歌手歌曲数量分布',
+            left: 'center',
+            textStyle: { color: '#606266', fontSize: 18, fontWeight: 'bold' }
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{b}: {c} ({d}%)'
+        },
+        series: [{
+            type: 'pie',
+            radius: '50%', // 设置饼图的半径
+            data: {{ singer|tojson }},
+            label: {
+                fontSize: 14, // 增加字体大小
+                color: '#333', // 标签颜色
+                formatter: '{b}: {c} ({d}%)' // 自定义标签格式
+            },
+            emphasis: {
+                label: {
+                    show: true,
+                    fontSize: '16',
+                    fontWeight: 'bold',
+                    color: '#fff', // 鼠标悬停时的标签颜色
+                    textShadowColor: '#333', // 阴影颜色
+                    textShadowBlur: 10 // 阴影模糊度
+                }
+            },
+            itemStyle: {
+                borderColor: '#fff', // 边框颜色
+                borderWidth: 2, // 边框宽度
+                shadowBlur: 10, // 阴影模糊度
+                shadowColor: 'rgba(0, 0, 0, 0.5)' // 阴影颜色
+            },
+            color: colors // 使用自定义颜色数组
+        }],
+        animation: {
+            duration: 1000, // 动画持续时间
+            easing: 'cubicInOut' // 动画缓动效果
+        }
+    };
+
+    const chart = echarts.init(document.getElementById('roseChart'));
+    chart.setOption(option);
+}
+
+
+
+        // 堆叠柱状图（专辑分布）
+        function initStackBar() {
+            const option = {
+                ...baseOption,
+                title: {
+                    text: '专辑歌曲分布TOP10',
+                    left: 'center',
+                    textStyle: {fontSize: 16}
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {type: 'shadow'}
+                },
+                xAxis: {
+                    type: 'category',
+                    data: {{ album_names|tojson }},
+                    axisLabel: {rotate: 30}
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '歌曲数量',
+                    nameTextStyle: {padding: [0, 0, 0, 30]}
+                },
+                series: [{
+                    name: '歌曲数量',
+                    type: 'bar',
+                    data: {{ album_counts|tojson }},
+                    itemStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 0, y: 0, x2: 0, y2: 1,
+                            colorStops: [{
+                                offset: 0, color: colors[0]
+                            }, {
+                                offset: 1, color: colors[1]
+                            }]
+                        },
+                        borderRadius: [4, 4, 0, 0]
+                    },
+                    label: {
+                        show: false,
+                        position: 'top',
+                        color: colors[0]
+                    }
+                }]
+            };
+            echarts.init(document.getElementById('stackBar')).setOption(option);
+        }
+
+        // 散点图（播放列表分析）
+        function initBubble() {
+            const option = {
+                ...baseOption,
+                title: {
+                    text: '播放列表多维分析',
+                    left: 'center'
+                },
+                tooltip: {
+                    formatter: params => `
+                ${params.name}<br/>
+                歌曲数量: ${params.value[0]}<br/>
+                播放量: ${params.value[1].toLocaleString()}
+            `
+                },
+                xAxis: {
+                    name: '歌曲数量',
+                    nameLocation: 'center',
+                    nameGap: 30
+                },
+                yAxis: {
+                    name: '播放量',
+                    scale: true
+                },
+                visualMap: {
+                    show: false,
+                    dimension: 2,
+                    min: 0,
+                    max: 50,
+                    inRange: {symbolSize: [10, 40]}
+                },
+                series: [{
+                    type: 'scatter',
+                    data: {{ play_list|tojson }},
+                    itemStyle: {
+                        color: colors[3],
+                        opacity: 0.7
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(0,0,0,0.3)'
+                        }
+                    }
+                }]
+            };
+            echarts.init(document.getElementById('bubbleChart')).setOption(option);
+        }
+
+        // 环形图（播放量分布）
+        function initRing() {
+            const option = {
+                ...baseOption,
+                title: {
+                    text: '播放量分布',
+                    left: 'center'
+                },
+                tooltip: {trigger: 'item'},
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    top: 'middle'
+                },
+                series: [{
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        show: true,
+                        formatter: '{b|{b}}\n{per|{d}%}',
+                        rich: {
+                            b: {fontSize: 12},
+                            per: {
+                                color: '#909399',
+                                fontSize: 10,
+                                padding: [2, 4]
+                            }
+                        }
+                    },
+                    data: {{ play_range|tojson }},
+                    itemStyle: {
+                        color: params => colors[params.dataIndex % colors.length]
+                    }
+                }]
+            };
+            echarts.init(document.getElementById('ringChart')).setOption(option);
+        }
+
+        // 横向柱状图（作者分析）
+        function initBar() {
+            const option = {
+                ...baseOption,
+                title: {text: '作者播放列表数量TOP10', left: 'center'},
+                tooltip: {trigger: 'axis'},
+                xAxis: {type: 'value'},
+                yAxis: {
+                    type: 'category',
+                    data: {{ authors|tojson }},
+                    axisLabel: {margin: 20}
+                },
+                series: [{
+                    type: 'bar',
+                    data: {{ author_counts|tojson }},
+                    itemStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 0, y: 0, x2: 1, y2: 0,
+                            colorStops: [{
+                                offset: 0, color: colors[4]
+                            }, {
+                                offset: 1, color: colors[5]
+                            }]
+                        }
+                    },
+                    label: {
+                        show: true,
+                        position: 'right',
+                        color: colors[4]
+                    }
+                }]
+            };
+            echarts.init(document.getElementById('barChart')).setOption(option);
+        }
+
+        // 折线图（流行度分布）
+        function initLine() {
+            const option = {
+                ...baseOption,
+                title: {text: '歌曲流行度分布', left: 'center'},
+                tooltip: {  // 新增tooltip配置
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(255,255,255,0.95)',
+                    borderColor: '#ddd',
+                    borderWidth: 1,
+                    padding: [8, 16],
+                    textStyle: {
+                        color: '#606266',
+                        fontSize: 14
+                    },
+                    formatter: function (params) {
+                        return `
+                    <strong>${params[0].name}</strong><br/>
+                    歌曲数量：<span style="color:${colors[2]};font-weight:bold">${params[0].value.toLocaleString()}</span>
+                `;
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    data: {{ pop_ranges|tojson }},
+                    axisLabel: {
+                        interval: 0,
+                        formatter: function (value) {
+                            return value.split(' ')[0]; // 简写显示范围值
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '歌曲数量',
+                    nameTextStyle: {
+                        color: '#909399'
+                    }
+                },
+                series: [{
+                    data: {{ pop_counts|tojson }},
+                    type: 'line',
+                    name: '歌曲数量',
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    lineStyle: {
+                        width: 3,
+                        color: colors[2]
+                    },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                            offset: 0,
+                            color: colors[2] + '80'
+                        }, {
+                            offset: 1,
+                            color: colors[2] + '10'
+                        }])
+                    },
+                    itemStyle: {  // 新增数据点样式
+                        color: colors[2],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }
+                }]
+            };
+            echarts.init(document.getElementById('lineChart')).setOption(option);
+        }
+
+
+        // 初始化所有图表
+        window.onload = initCharts;
+    </script>
+    <script>
+        var chartDom = document.getElementById('playchart');
+        var myChart = echarts.init(chartDom);
+
+        var option = {
+            title: {
+                text: '播放量最高歌单'
+            },
+            polar: {
+                radius: [30, '80%']
+            },
+            radiusAxis: {
+                max: 1000000000,
+                axisLabel: {
+                    formatter: value => {
+                        return value >= 1e8 ? (value / 1e8) + '亿' : value; // 格式化标签显示
+                    }
+                }
+            },
+            angleAxis: {
+                type: 'category',
+                data: {{ play_list1|tojson }},
+                startAngle: 75
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: function (params) {
+                    return `${params.name}: ${params.value}`;
+                }
+            },
+            series: {
+                type: 'bar',
+                data: {{ play_num_list1|tojson }},
+                coordinateSystem: 'polar',
+                label: {
+                    show: true,
+                    position: 'middle',
+                    formatter: '{c}', // 在柱子中间显示值
+                    color: '#fff' // 标签字体颜色
+                },
+                itemStyle: {
+                    // 使用渐变色
+                    color: {
+                        type: 'linear',
+                        x: 0,
+                        y: 0,
+                        x2: 1,
+                        y2: 1,
+                        colorStops: [
+                            {offset: 0, color: '#FF6F61'}, // 渐变起始颜色
+                            {offset: 1, color: '#6F5B7F'}  // 渐变结束颜色
+                        ],
+                        global: false // 缺省为 false
+                    },
+                    // 添加边框效果
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                    opacity: 0.8 // 透明度
+                }
+            },
+            animation: false
+        };
+
+        myChart.setOption(option);
+    </script>
+    <script>
+        var myChart = echarts.init(document.getElementById('titleword'));
+
+        myChart.setOption({
+            title: {
+                text: '歌单标题词云'
+            },
+
+            tooltip: {
+                show: true,
+                backgroundColor: 'rgba(255, 255, 255, 0.8)', // 透明背景
+                borderColor: '#ccc', // 边框颜色
+                borderWidth: 1, // 边框宽度
+                textStyle: {
+                    color: '#333' // 字体颜色
+                },
+                formatter: function (params) {
+                    return `${params.name}: ${params.value}`; // 向用户展示关键词及其权重
+                }
+            },
+            series: [{
+                type: 'wordCloud',  // 类型为字符云
+                shape: 'circle',     // 平滑 圆形:circle
+                gridSize: 4,        // 网格尺寸
+                size: ['100%', '100%'],
+                sizeRange: [20, 100], // 字体大小范围
+                rotationRange: [-90, 90], // 旋转范围，允许正负90度旋转
+                textStyle: {
+                    normal: {
+                        fontFamily: 'sans-serif',
+                        color: function () {
+                            // 更加丰富的随机颜色，保证更大的对比度
+                            return 'rgb('
+                                + [Math.round(Math.random() * 255),
+                                    Math.round(Math.random() * 255),
+                                    Math.round(Math.random() * 255)
+                                ].join(',') + ')';
+                        },
+                        // 文字轮廓样式
+                        textBorderColor: '#fff', // 字体轮廓颜色
+                        textBorderWidth: 2 // 字体轮廓宽度
+                    },
+                    emphasis: {
+                        shadowBlur: 10,       // 阴影模糊度
+                        shadowColor: '#333'   // 阴影颜色
+                    }
+                },
+                data: {{ wordcloud_dict|tojson }},
+            }]
+        });
+
+        // 适应窗口大小调整
+        $(window).resize(function () {
+            myChart.resize();
+        });
+
+
+    </script>
+{% endblock %}

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Gramos - Admin Dashboard</title>
+
+    <!-- begin::global styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/bundle.css') }}" type="text/css">
+    <!-- end::global styles -->
+
+    <!-- begin::datepicker -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/datepicker/daterangepicker.css') }}">
+    <!-- end::datepicker -->
+
+    <!-- begin::vmap -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/vmap/jqvmap.min.css') }}">
+    <!-- end::vmap -->
+
+    <!-- begin::custom styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/app.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/custom.css') }}" type="text/css">
+    <!-- end::custom styles -->
+    <!-- CSS样式 -->
+</head>
+<body>
+
+<!-- begin::page loader-->
+<div class="page-loader">
+    <div class="spinner-border"></div>
+    <span>Loading ...</span>
+</div>
+<!-- end::page loader -->
+
+<!-- begin::side menu -->
+<div class="side-menu">
+    <div class='side-menu-body'>
+        <ul>
+            <li class="side-menu-divider">系统导航</li>
+            <li class="">
+                <a href="#"><i class="icon ti-home"></i> <span>歌单数据管理</span> </a>
+                <ul>
+                    <li><a class="active" href="/new_playlists/list">歌单数据表</a></li>
+                </ul>
+            </li>
+            <li class="">
+                <a href="#"><i class="icon ti-home"></i> <span>歌曲数据管理</span> </a>
+                <ul>
+                    <li><a class="active" href="/songs/list">歌曲数据表</a></li>
+                </ul>
+            </li>
+            <li class="">
+                <a href="#"><i class="icon ti-home"></i> <span>用户管理</span> </a>
+                <ul>
+                    <li><a class="active" href="/user/list">用户表</a></li>
+                </ul>
+            </li>
+            <li class="">
+                <a href="#"><i class="icon ti-home"></i> <span>音乐评论管理</span> </a>
+                <ul>
+                    <li><a class="active" href="/music_comment/list">音乐评论表</a></li>
+                </ul>
+            </li>
+            <li class="">
+                <a href="#"><i class="icon ti-home"></i> <span>敏感词管理</span> </a>
+                <ul>
+                    <li><a class="active" href="/dict_table/list">敏感词表</a></li>
+                </ul>
+            </li>
+            <li class="">
+                <a href="#"><i class="icon ti-home"></i> <span>分类音乐管理</span> </a>
+                <ul>
+                    <li><a class="active" href="/category_muisc/list">分类音乐表</a></li>
+                </ul>
+            </li>
+            <li class="">
+                <a href="#"><i class="icon ti-home"></i> <span>音乐类别管理</span> </a>
+                <ul>
+                    <li><a class="active" href="/music_category/list">音乐类别表</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- end::side menu -->
+<!--顶部-->
+<!-- begin::navbar -->
+<nav class="navbar">
+    <div class="container-fluid">
+        <div class="header-logo">
+        </div>
+        <div class="header-body">
+            <form class="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search ..."
+                           aria-label="Recipient's username"
+                           aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                        <button class="btn" type="button" id="button-addon2">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="#" class="d-lg-none d-sm-block nav-link search-panel-open">
+                        <i class="fa fa-search"></i>
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="#" data-toggle="dropdown">
+                        <figure class="avatar avatar-sm avatar-state-success">
+                            <img class="rounded-circle"
+                                 src="{{ url_for('static', filename='assets/media/image/avatar.jpg') }}" alt="...">
+                        </figure>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a href="{{ url_for('admin_login.pwd') }}" class="text-primary dropdown-item">修改密码</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ url_for('admin_login.logout') }}" class="text-danger dropdown-item">退出</a>
+                    </div>
+                </li>
+                <li class="nav-item d-lg-none d-sm-block">
+                    <a href="#" class="nav-link side-menu-open">
+                        <i class="ti-menu"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+<!-- end::navbar -->
+{% block content %}
+
+{% endblock %}
+<!-- end::main content -->
+
+<!-- begin::global scripts -->
+<script src="{{ url_for('static', filename='assets/vendors/bundle.js') }}"></script>
+<!-- end::global scripts -->
+
+<!-- begin::charts -->
+<script src="{{ url_for('static', filename='assets/vendors/charts/chartjs/chart.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/vendors/charts/peity/jquery.peity.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/examples/charts/chartjs.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/examples/charts/peity.js') }}"></script>
+<!-- end::charts -->
+
+<!-- begin::daterangepicker -->
+<script src="{{ url_for('static', filename='assets/vendors/datepicker/daterangepicker.js') }}"></script>
+<!-- end::daterangepicker -->
+
+<!-- begin::dashboard -->
+<script src="{{ url_for('static', filename='assets/js/examples/dashboard.js') }}"></script>
+<!-- end::dashboard -->
+
+<!-- begin::vmap -->
+<script src="{{ url_for('static', filename='assets/vendors/vmap/jquery.vmap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/vendors/vmap/maps/jquery.vmap.usa.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/examples/vmap.js') }}"></script>
+<!-- end::vmap -->
+
+<!-- begin::custom scripts -->
+<script src="{{ url_for('static', filename='assets/js/custom.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/app.js') }}"></script>
+<!-- end::custom scripts -->

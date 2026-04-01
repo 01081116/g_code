@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% block content %}
+       <link rel="stylesheet" href="../../static/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <!-- 新歌首发 -->
+    <style>
+        /* 优化后的推荐按钮样式 */
+        .recommend-btn {
+            position: absolute;
+            right: 30px;
+            top: 20px;
+            z-index: 999;
+            background: linear-gradient(135deg, #7B90FF 0%, #FF6B6B 100%);
+            color: white;
+            border-radius: 30px;
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(123, 144, 255, 0.3);
+            display: flex;
+            align-items: center;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        .recommend-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(135deg, #FF6B6B 0%, #7B90FF 100%);
+        }
+
+        .recommend-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .recommend-btn i {
+            margin-right: 10px;
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+
+        .recommend-btn:hover i {
+            transform: rotate(20deg);
+        }
+
+    </style>
+    <div class="main" id="newSong">
+        <div class="main-inner">
+            <div class="main-title">
+                <h2 class="title" style="color: white;font-size: 45px;margin-bottom: 10px">音乐推荐</h2>
+
+                <span class="line line-left"></span>
+                <span class="line line-right">
+                </span>
+                               <!-- 优化后的推荐按钮 -->
+                    <form action="/rec" method="POST">
+                        <button class="recommend-btn" type="submit">
+                            <i class="fa fa-diamond"></i>个性化推荐
+                        </button>
+                    </form>
+            </div>
+            <a class="readAll">全部<i class="icon-sprite"></i></a>
+            <div class="main-tab tab-title">
+            </div>
+            <div class="main-slider tab-cont">
+                <ul class="slider-wrapper">
+                    {% for re in rec_data %}
+                        <li>
+                            <a class="img btn-play" data-song-id="{{ re[1] }}" data-song-singer="{{ re[3] }}"
+                               data-song-name="{{ re[2] }}" data-song-cover="{{ re[5] }}">
+                                <img src="{{ re[5] }}" alt="#" style="width: 300px; height: 300px;">
+
+                                <button class="watch-btn btn-play"
+                                        data-song-id="{{ re[1] }}" data-song-singer="{{ re[3] }}"
+                                        data-song-name="{{ re[2] }}" data-song-cover="{{ re[5] }}"></button>
+                                <span class="mask"></span>
+                                <button class="watch-btn btn-play"
+                                        data-song-id="{{ re[1] }}" data-song-singer="{{ re[3] }}"
+                                        data-song-name="{{ re[2] }}" data-song-cover="{{ re[5] }}">
+                                    <i class="icon-play"></i>
+                                </button>
+                            </a>
+                            <div class="info">
+                                <div class="title">
+                                    <a>{{ re[2] }}</a>
+                                    <i class="icon-sprite"></i>
+                                </div>
+                                <a class="author">{{ re[3] }}</a>
+                            </div>
+                        </li>
+                        {#                         <button class="watch-btn" onclick="musicPlay('{{re[1]}}','{{re[3]}}','{{re[2]}}')">Play</button>#}
+                    {% endfor %}
+                </ul>
+
+                <div class="slider-btns">
+
+                    <span><i></i></span>
+                    <span><i></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="main-operate">
+            <a href="javascript:;" class="slider-prev"><i class="icon-sprite"></i></a>
+            <a href="javascript:;" class="slider-next"><i class="icon-sprite"></i></a>
+        </div>
+    </div>
+
+    <!-- 排行榜 -->
+    <div class="main" id="rank">
+        <div class="main-inner">
+            <div class="main-title">
+                <h2 class="title"><i></i></h2>
+                <span class="line line-left"></span>
+                <span class="line line-right"></span>
+            </div>
+            <a class="readAll">全部<i class="icon-sprite"></i></a>
+            <ul class="rank-list">
+                <li class="rank-list__item rank-list__1">
+                    <span class="rank-bg"></span>
+                    <span class="mask"></span>
+                    <div class="title">
+                        <i></i>
+                        <h3>流行指数</h3>
+                    </div>
+                    <i class="line"></i>
+                    <ul class="song-list">
+                        {% for re1 in new_data_list %}
+                            <li class="song-list__item">
+                                <a class="btn-play" data-song-id="{{ re1[0] }}" data-song-singer="{{ re1[2] }}"
+                                   data-song-name="{{ re1[1] }}" data-song-cover="{{ re1[3] }}">
+                                    <span>{{ re1[1] }}</span>
+                                    <i class="icon-play"></i> <!-- 将图标放在这里 -->
+                                </a>
+                                <span>{{ re1[2] }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="rank-list__item rank-list__2">
+                    <span class="rank-bg"></span>
+                    <span class="mask"></span>
+                    <div class="title">
+                        <i></i>
+                        <h3>热歌</h3>
+                    </div>
+                    <i class="line"></i>
+                    <ul class="song-list">
+                        {% for re1 in new_data_list02 %}
+                            <li class="song-list__item">
+                                <a class="btn-play" data-song-id="{{ re1[0] }}" data-song-singer="{{ re1[2] }}"
+                                   data-song-name="{{ re1[1] }}" data-song-cover="{{ re1[3] }}">
+                                    <span>{{ re1[1] }}</span>
+                                    <i class="icon-play"></i> <!-- 将图标放在这里 -->
+                                </a>
+                                <span>{{ re1[2] }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="rank-list__item rank-list__3">
+                    <span class="rank-bg"></span>
+                    <span class="mask"></span>
+                    <div class="title">
+                        <i></i>
+                        <h3>新歌</h3>
+                    </div>
+                    <i class="line"></i>
+                    <ul class="song-list">
+                        {% for re2 in new_data_list03 %}
+                            <li class="song-list__item">
+                                <a class="btn-play" data-song-id="{{ re2[0] }}" data-song-singer="{{ re2[2] }}"
+                                   data-song-name="{{ re2[1] }}" data-song-cover="{{ re2[3] }}">
+                                    <span>{{ re2[1] }}</span>
+                                    <i class="icon-play"></i> <!-- 将图标放在这里 -->
+                                </a>
+                                <span>{{ re2[2] }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="rank-list__item rank-list__4">
+                    <span class="rank-bg"></span>
+                    <span class="mask"></span>
+                    <div class="title">
+                        <i></i>
+                        <h3>猜你喜欢</h3>
+                    </div>
+                    <i class="line"></i>
+                    <ul class="song-list">
+                        {% for re1 in new_data_list04 %}
+                            <li class="song-list__item">
+                                <a class="btn-play" data-song-id="{{ re1[0] }}" data-song-singer="{{ re1[2] }}"
+                                   data-song-name="{{ re1[1] }}" data-song-cover="{{ re1[3] }}">
+                                    <span>{{ re1[1] }}</span>
+                                    <i class="icon-play" style="height: 21px!important;width: 21px!important;"></i>
+                                    <!-- 将图标放在这里 -->
+                                </a>
+                                <span>{{ re1[2] }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 热门歌单 -->
+    <div class="main" id="hotSong">
+        <div class="main-inner">
+            <div class="main-title">
+                <h2 class="title"><i></i></h2>
+                <span class="line line-left"></span>
+                <span class="line line-right"></span>
+            </div>
+            <div class="main-slider">
+                <ul class="slider-wrapper">
+                    {% for re1 in datalist05 %}
+                        <li>
+                            <a href="{{ re1[4] }}" target="_blank" class="img">
+                                <img src="{{ re1[5] }}" style="width: 300px; height: 300px;" alt="#">
+
+                            </a>
+                            <div class="info">
+                                <div class="title">
+                                    <!-- <a href="#">那个静默的阳光午后</a> -->
+                                    <a href="{{ re1[4] }}" target="_blank">{{ re1[3] }}</a>
+                                    <i class="icon-sprite"></i>
+                                </div>
+                                <a class="author">播放量：{{ re1[6] }}</a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="slider-btns">
+
+                    <span><i></i></span>
+                    <span><i></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="main-operate">
+            <a href="javascript:;" class="slider-prev"><i class="icon-sprite"></i></a>
+            <a href="javascript:;" class="slider-next"><i class="icon-sprite"></i></a>
+        </div>
+    </div>
+
+    <!-- MV -->
+
+    <script>
+        var imgs = document.querySelectorAll('img')
+        imgs.forEach(function (img) {
+            img.addEventListener('click', function () {
+                alert(
+                    hbib
+                )
+            })
+        })
+    </script>
+
+{% endblock %}
+

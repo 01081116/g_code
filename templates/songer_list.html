@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <!-- 样式部分保持不变 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ffffff; /* 主背景色 */
+            --secondary-color: #4CAF50; /* 主色调 - 清新的绿色 */
+            --accent-color: #FF9800; /* 强调色 - 温暖的橙色 */
+            --text-primary: #2d3436; /* 主要文字颜色 */
+            --text-secondary: #636e72; /* 次要文字颜色 */
+            --gradient-light: #f8f9fa; /* 渐变浅色 */
+            --gradient-dark: #e9ecef; /* 渐变深色 */
+        }
+
+        .right-area-upper {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: var(--primary-color);
+        }
+
+        .search-input {
+            width: 400px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 2px solid var(--secondary-color);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 15px var(--secondary-color);
+        }
+
+        .content-line {
+            padding: 2rem;
+        }
+
+        .line-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .header-text {
+            font-size: 1.8rem;
+            color: var(--text-color);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* 卡片布局 */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            padding: 1rem 0;
+        }
+
+        .music-card {
+            background: var(--primary-color);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .music-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .card-title {
+            color: var(--text-color);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-subtitle {
+            color: rgba(23, 22, 22, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .card-actions {
+            position: absolute;
+            right: 1.5rem;
+            bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-play,
+        .btn-collect {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-play:hover {
+            background: var(--secondary-color);
+        }
+
+        .btn-collect:hover {
+            color: var(--accent-color);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .card-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 样式部分保持不变 */
+        .fas.fa-heart {
+            color: #ff4d4d; /* 确保红色样式正确 */
+        }
+
+        .btn-uncollect {
+            border: none; /* 确保没有边框 */
+            width: 30px;
+            border-radius: 500px;
+            color: var(--text-light); /* 文字颜色 */
+        }
+
+        .page-right-content {
+            display: flex;
+            justify-content: center; /* 水平居中 */
+            flex-direction: column; /* 垂直方向排列 */
+            align-items: center; /* 垂直居中 */
+            padding: 2rem; /* 添加一些内边距 */
+        }
+    </style>
+
+    <div class="page-right-content">
+        <div class="content-line content-line-list">
+            <div class="line-header">
+                <span class="header-text">热门歌手</span>
+                <form method="POST" style="display: inline;">
+                    <input type="text" name="artist" class="search-input" placeholder="搜索歌手..."
+                           value="{{ selected_artist }}" onchange="this.form.submit()">
+                </form>
+            </div>
+            <div id="owl-slider-2" class="card-grid">
+                {% for song in random_songs %}
+                    <div class="music-card">
+                        <a href="{{ url_for('front.music_detail', music_id=song[0]) }}">
+                            <img src="{{ song[5] }}" class="card-image" alt="cover">
+                        </a>
+                        <div class="card-content">
+                            <h3 class="card-title">{{ song[2] }}</h3>
+                            <p class="card-subtitle">By {{ song[3] }}</p>
+                            <div class="card-actions">
+                                <button class="btn-play" data-song-id="{{ song[1] }}"
+                                        data-song-singer="{{ song[3] }}"
+                                        data-song-name="{{ song[2] }}"
+                                        data-song-cover="{{ song[5] }}">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="{{ 'btn-uncollect' if song[0] in collected_songs else 'btn-collect' }}"
+                                        data-song-id="{{ song[0] }}"
+                                        data-song-singer="{{ song[3] }}"
+                                        data-song-name="{{ song[2] }}"
+                                        data-song-cover="{{ song[5] }}">
+                                    <i class="{{ 'fas' if song[0] in collected_songs else 'far' }} fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="content-line content-line-list">
+            <div class="line-header">
+                <span class="header-text">热门歌曲</span>
+            </div>
+            <div class="card-grid">
+                {% for song in songs %}
+                    <div class="music-card">
+                        <a href="{{ url_for('front.music_detail', music_id=song[0]) }}">
+                            <img src="{{ song[5] }}" class="card-image" alt="cover">
+                        </a>
+                        <div class="card-content">
+                            <h3 class="card-title">{{ song[2] }}</h3>
+                            <p class="card-subtitle">By {{ song[3] }}</p>
+                            <div class="card-actions">
+                                <button class="btn-play" data-song-id="{{ song[1] }}"
+                                        data-song-singer="{{ song[3] }}"
+                                        data-song-name="{{ song[2] }}"
+                                        data-song-cover="{{ song[5] }}">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="{{ 'btn-uncollect' if song[0] in collected_songs else 'btn-collect' }}"
+                                        data-song-id="{{ song[0] }}"
+                                        data-song-singer="{{ song[3] }}"
+                                        data-song-name="{{ song[2] }}"
+                                        data-song-cover="{{ song[5] }}">
+                                    <i class="{{ 'fas' if song[0] in collected_songs else 'far' }} fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化收藏状态
+        function initCollectButtons() {
+            $('.music-card').each(function () {
+                const $card = $(this);
+                const $btn = $card.find('.btn-collect, .btn-uncollect');
+                const isCollected = $btn.find('i').hasClass('fas'); // 根据图标判断收藏状态
+
+                $btn.toggleClass('btn-collect', !isCollected)
+                    .toggleClass('btn-uncollect', isCollected);
+            });
+        }
+
+        // 收藏/取消收藏操作
+        $(document).on('click', '.btn-collect, .btn-uncollect', function () {
+            const $btn = $(this);
+            const isUncollect = $btn.hasClass('btn-uncollect');
+            const songId = $btn.data('song-id');
+            const $card = $btn.closest('.music-card');
+
+            $.ajax({
+                type: 'POST',
+                url: isUncollect ? '/uncollected' : '/collected',
+                data: JSON.stringify({'id': songId}),
+                contentType: 'application/json',
+                success: function (response) {
+                    // 更新按钮状态
+                    $btn.toggleClass('btn-collect btn-uncollect');
+                    $btn.find('i')
+                        .toggleClass('far fas')
+                        .css('color', isUncollect ? '' : '#ff4757');
+
+                    // 添加动画效果
+                    $card.css('transform', 'scale(0.95)');
+                    setTimeout(() => $card.css('transform', 'scale(1)'), 200);
+
+                    // 显示提示信息
+                    showModal(response.message);
+                },
+                error: function (xhr) {
+                    showModal('操作失败: ' + xhr.statusText);
+                }
+            });
+        });
+
+        // 页面加载时初始化
+        $(document).ready(function () {
+            initCollectButtons();
+        });
+    </script>
+
+{% endblock %}
